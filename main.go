@@ -14,9 +14,11 @@ func main() {
 		logger = log.New(&buf, "logger: ", log.Lshortfile)
 	)
 
-	d := files.ReadFile(*logger, "/media/wayne/FreeAgent GoFlex Drive/Central Data Store/plandek - wip/nextgen/e2e/cypress/e2e/data-integrity-int/pagerduty_elastic.cy.ts")
+	d := files.NewDocument()
 
-	logger.Printf("Main Doc Title: %s", d.Title.Title)
+	d.ReadFile(*logger, "/media/wayne/FreeAgent GoFlex Drive/Central Data Store/plandek - wip/nextgen/e2e/cypress/e2e/data-integrity-int/pagerduty_elastic.cy.ts")
+
+	logger.Printf("Main Doc Title: %s", d.GetMainTitle(*logger))
 
 	fmt.Print(&buf)
 }
