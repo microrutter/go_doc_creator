@@ -2,7 +2,9 @@ package files
 
 import (
 	"bytes"
+	"fmt"
 	"log"
+	"strconv"
 	"testing"
 )
 
@@ -11,60 +13,58 @@ var (
 	logger = log.New(&buf, "logger: ", log.Lshortfile)
 )
 
-func TestReadFile(t *testing.T) {
-	text, newLine, skip := title("describe(\"This is a test\", function ())", false, false)
-
-	if newLine {
-		t.Error("NewLine came back as true")
+func TestTitle(t *testing.T) {
+	var tests = []struct {
+		text        string
+		newLine     bool
+		findText    string
+		wantText    string
+		wantNewLine bool
+	}{
+		{"describe(\"This is a test\", function ())", false, "describe", "This is a test", false},
+		{"describe(", false, "describe", "", true},
+		{"\"This is the start", true, "describe", "This is the start", true},
+		{"This is the finish\", function()", true, "describe", "This is the finish", false},
+		{"it(\"This is a test\", function ())", false, "it(", "This is a test", false},
+		{"it(\"This is a test looking for describe (\", function ())", false, "describe(", "", false},
 	}
 
-	if !skip {
-		t.Error("Skip came back as False")
+	for _, tt := range tests {
+		testname := fmt.Sprintf("Test Name: %s", tt.text)
+		t.Run(testname, func(t *testing.T) {
+			ans, newl := title(tt.text, tt.newLine, tt.findText)
+			if ans != tt.wantText {
+				t.Errorf("got %s, want %s", ans, tt.wantText)
+			}
+
+			if newl != tt.wantNewLine {
+				t.Errorf("Wanted: %s, Got: %s", strconv.FormatBool(tt.wantNewLine), strconv.FormatBool(newl))
+			}
+		})
 	}
 
-	if text != "This is a test" {
-		t.Errorf("Text cam back as: %s", text)
+}
+
+func TestComments(t *testing.T) {
+	var tests = []struct {
+		text     string
+		findText string
+		wantText string
+	}{
+		{"//This is a comment", "//", "This is a comment"},
+		{"// This is a comment", "//", " This is a comment"},
+		{"#This is a comment", "#", "This is a comment"},
+		{"https://api.pagerduty.com/incidents", "//", ""},
 	}
 
-	nlText, nlnewLine, nlskip := title("describe(", false, false)
-
-	if !nlnewLine {
-		t.Error("NewLine came back as false")
+	for _, tt := range tests {
+		testname := fmt.Sprintf("Test Name: %s", tt.text)
+		t.Run(testname, func(t *testing.T) {
+			ans := comments(tt.text, tt.findText)
+			if ans != tt.wantText {
+				t.Errorf("got %s, want %s", ans, tt.wantText)
+			}
+		})
 	}
 
-	if nlskip {
-		t.Error("Skip came back as True")
-	}
-
-	if nlText != "" {
-		t.Errorf("Text cam back as: %s", nlText)
-	}
-
-	ptext, pnewLine, pskip := title("\"This is the start", true, false)
-
-	if !pnewLine {
-		t.Error("NewLine came back as false")
-	}
-
-	if pskip {
-		t.Error("Skip came back as True")
-	}
-
-	if ptext != "This is the start" {
-		t.Errorf("Text came back as: %s", ptext)
-	}
-
-	lasttext, lastnewLine, lastskip := title("This is the finish\", function()", true, false)
-
-	if lastnewLine {
-		t.Error("Last NewLine came back as true")
-	}
-
-	if !lastskip {
-		t.Error("Last Skip came back as false")
-	}
-
-	if lasttext != "This is the finish" {
-		t.Errorf("Last Text came back as: %s", lasttext)
-	}
 }
