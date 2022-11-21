@@ -30,7 +30,7 @@ func TestTitle(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		testname := fmt.Sprintf("%s", tt.text)
+		testname := fmt.Sprintf("Test Name: %s", tt.text)
 		t.Run(testname, func(t *testing.T) {
 			ans, newl := title(tt.text, tt.newLine, tt.findText)
 			if ans != tt.wantText {
@@ -58,7 +58,7 @@ func TestComments(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		testname := fmt.Sprintf("%s", tt.text)
+		testname := fmt.Sprintf("Test Name: %s", tt.text)
 		t.Run(testname, func(t *testing.T) {
 			ans := comments(tt.text, tt.findText)
 			if ans != tt.wantText {

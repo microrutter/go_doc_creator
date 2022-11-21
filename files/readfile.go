@@ -74,8 +74,6 @@ func (newDoc *Document) ReadFile(log *log.Logger, filepath string) error {
 
 	check(err, log)
 
-	defer f.Close()
-
 	scanner := bufio.NewScanner(f)
 
 	newLine := false
@@ -109,7 +107,7 @@ func (newDoc *Document) ReadFile(log *log.Logger, filepath string) error {
 		}
 	}
 
-	return f.Sync()
+	return f.Close()
 }
 
 func title(text string, nextLine bool, findText string) (string, bool) {
