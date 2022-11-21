@@ -17,7 +17,7 @@ func newSubTitle() *SubTitles {
 
 func check(e error, log log.Logger) {
 	if e != nil {
-		log.Fatal(e)
+		log.Print(e)
 	}
 }
 
