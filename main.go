@@ -16,7 +16,7 @@ func main() {
 
 	d := files.NewDocument()
 
-	d.ReadFile(*logger, "/media/wayne/FreeAgent GoFlex Drive/Central Data Store/plandek - wip/nextgen/e2e/cypress/e2e/data-integrity-int/pagerduty_elastic.cy.ts")
+	d.ReadFile(logger, "/media/wayne/FreeAgent GoFlex Drive/Central Data Store/plandek - wip/nextgen/e2e/cypress/e2e/data-integrity-int/pagerduty_elastic.cy.ts")
 
 	fmt.Print(&buf)
 }

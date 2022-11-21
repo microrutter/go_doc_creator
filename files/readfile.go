@@ -2,6 +2,7 @@ package files
 
 import (
 	"bufio"
+	"fmt"
 	"log"
 	"os"
 	"strings"
@@ -15,48 +16,48 @@ func newSubTitle() *SubTitles {
 	return &SubTitles{}
 }
 
-func check(e error, log log.Logger) {
+func check(e error, log *log.Logger) {
 	if e != nil {
 		log.Print(e)
 	}
 }
 
-func (sub *SubTitles) setSubTitle(log log.Logger, title string) {
+func (sub *SubTitles) setSubTitle(log *log.Logger, title string) {
 	log.Printf("Setting subtitle title to: %s", title)
 	sub.Title = sub.Title + title + " "
 }
 
-func (sub *SubTitles) setSubTitleComments(log log.Logger, comment string) {
+func (sub *SubTitles) setSubTitleComments(log *log.Logger, comment string) {
 	log.Printf("Setting subtitle comment to: %s", comment)
 	sub.Title = sub.Comment + comment + " "
 }
 
-func (newDoc *Document) GetSubTitle(log log.Logger) []SubTitles {
+func (newDoc *Document) GetSubTitle(log *log.Logger) []SubTitles {
 	log.Printf("Getting the list of subtitles")
 	return newDoc.SubTitle
 }
 
-func (newDoc *Document) setMainTitle(log log.Logger, title string) {
+func (newDoc *Document) setMainTitle(log *log.Logger, title string) {
 	log.Printf("Setting Main Title To: %s", title)
 	newDoc.Title.Title = newDoc.Title.Title + title + " "
 }
 
-func (newDoc *Document) GetMainTitle(log log.Logger) string {
+func (newDoc *Document) GetMainTitle(log *log.Logger) string {
 	log.Printf("Getting Main Title")
 	return newDoc.Title.Title
 }
 
-func (newDoc *Document) setMainComments(log log.Logger, comment string) {
+func (newDoc *Document) setMainComments(log *log.Logger, comment string) {
 	log.Printf("Setting Main Comment To: %s", comment)
 	newDoc.Title.Title = newDoc.Title.Comment + comment + " "
 }
 
-func (newDoc *Document) GetMainComments(log log.Logger) string {
+func (newDoc *Document) GetMainComments(log *log.Logger) string {
 	log.Printf("Getting Main Comments")
 	return newDoc.Title.Comment
 }
 
-func (newDoc *Document) addSubTitle(log log.Logger, subTitle SubTitles) {
+func (newDoc *Document) addSubTitle(log *log.Logger, subTitle SubTitles) {
 	log.Printf("Adding a subtitle to main Document")
 	newDoc.SubTitle = append(newDoc.SubTitle, subTitle)
 }
@@ -65,7 +66,7 @@ func (newDoc *Document) GetLastSubTitle() *SubTitles {
 	return &newDoc.SubTitle[len(newDoc.SubTitle)-1]
 }
 
-func (newDoc *Document) ReadFile(log log.Logger, filepath string) {
+func (newDoc *Document) ReadFile(log *log.Logger, filepath string) error {
 
 	log.Printf("Starting to read file at %s", filepath)
 
@@ -107,6 +108,8 @@ func (newDoc *Document) ReadFile(log log.Logger, filepath string) {
 			subTitle.setSubTitleComments(log, comment)
 		}
 	}
+
+	return f.Sync()
 }
 
 func title(text string, nextLine bool, findText string) (string, bool) {
@@ -119,13 +122,14 @@ func title(text string, nextLine bool, findText string) (string, bool) {
 			}
 			newS = text
 		} else {
-			newS = text[s+1:]
+			_, newS, _ = strings.Cut(text, "\"")
+			fmt.Println(newS)
 		}
 		e := strings.Index(newS, "\"")
 		if e == -1 {
 			return newS, true
 		}
-		result := newS[:e]
+		result, _, _ := strings.Cut(newS, "\"")
 		return result, false
 	}
 	return "", false
