@@ -1,0 +1,7 @@
+conf:
+  maintitle: "describe"
+  split:
+    start: "\""
+    finish: "\""
+  subtitle: "it("
+  comment: "//"
