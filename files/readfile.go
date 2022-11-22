@@ -2,10 +2,12 @@ package files
 
 import (
 	"bufio"
-	"fmt"
 	"log"
 	"os"
 	"strings"
+
+	"github.com/microrutter/go_doc_creator/config"
+	"github.com/microrutter/go_doc_creator/utils"
 )
 
 func NewDocument() *Document {
@@ -16,20 +18,18 @@ func newSubTitle() *SubTitles {
 	return &SubTitles{}
 }
 
-func check(e error, log *log.Logger) {
-	if e != nil {
-		log.Print(e)
-	}
-}
-
 func (sub *SubTitles) setSubTitle(log *log.Logger, title string) {
 	log.Printf("Setting subtitle title to: %s", title)
+	builder := strings.Builder{}
+	builder.WriteString(sub.Title)
+	builder.WriteString(title)
+	builder.WriteString(" ")
 	sub.Title = sub.Title + title + " "
 }
 
 func (sub *SubTitles) setSubTitleComments(log *log.Logger, comment string) {
 	log.Printf("Setting subtitle comment to: %s", comment)
-	sub.Title = sub.Comment + comment + " "
+	sub.Comment = append(sub.Comment, comment)
 }
 
 func (newDoc *Document) GetSubTitle(log *log.Logger) []SubTitles {
@@ -39,7 +39,11 @@ func (newDoc *Document) GetSubTitle(log *log.Logger) []SubTitles {
 
 func (newDoc *Document) setMainTitle(log *log.Logger, title string) {
 	log.Printf("Setting Main Title To: %s", title)
-	newDoc.Title.Title = newDoc.Title.Title + title + " "
+	builder := strings.Builder{}
+	builder.WriteString(newDoc.Title.Title)
+	builder.WriteString(title)
+	builder.WriteString(" ")
+	newDoc.Title.Title = builder.String()
 }
 
 func (newDoc *Document) GetMainTitle(log *log.Logger) string {
@@ -49,10 +53,10 @@ func (newDoc *Document) GetMainTitle(log *log.Logger) string {
 
 func (newDoc *Document) setMainComments(log *log.Logger, comment string) {
 	log.Printf("Setting Main Comment To: %s", comment)
-	newDoc.Title.Title = newDoc.Title.Comment + comment + " "
+	newDoc.Title.Comment = append(newDoc.Title.Comment, comment)
 }
 
-func (newDoc *Document) GetMainComments(log *log.Logger) string {
+func (newDoc *Document) GetMainComments(log *log.Logger) []string {
 	log.Printf("Getting Main Comments")
 	return newDoc.Title.Comment
 }
@@ -66,13 +70,19 @@ func (newDoc *Document) GetLastSubTitle() *SubTitles {
 	return &newDoc.SubTitle[len(newDoc.SubTitle)-1]
 }
 
-func (newDoc *Document) ReadFile(log *log.Logger, filepath string) error {
+func (newDoc *Document) ReadFile(log *log.Logger, filepath string, conffile string) error {
+
+	yaml := config.Config()
+
+	yaml.GetConf(*log, conffile)
+
+	conf := yaml.Conf
 
 	log.Printf("Starting to read file at %s", filepath)
 
 	f, err := os.Open(filepath)
 
-	check(err, log)
+	utils.Check(err, log)
 
 	scanner := bufio.NewScanner(f)
 
@@ -80,14 +90,15 @@ func (newDoc *Document) ReadFile(log *log.Logger, filepath string) error {
 
 	for scanner.Scan() {
 		log.Println("Checking Main Title")
-		t, nextLine := title(scanner.Text(), newLine, "describe")
+		text := scanner.Text()
+		t, nextLine := title(text, newLine, conf.MainTitle, conf.TitleSplit.Start, conf.TitleSplit.Finish)
 		newLine = nextLine
 		newDoc.setMainTitle(log, t)
 		if !newLine && len(newDoc.GetMainTitle(log)) > 0 && len(newDoc.GetSubTitle(log)) <= 0 {
-			comment := comments(scanner.Text(), "//")
+			comment := comments(text, conf.Comment)
 			newDoc.setMainComments(log, comment)
 		}
-		st, nextLine := title(scanner.Text(), newLine, "it(")
+		st, nextLine := title(text, newLine, conf.SubTitle, conf.TitleSplit.Start, conf.TitleSplit.Finish)
 		if len(st) > 0 && !nextLine {
 			subTitle := newSubTitle()
 			subTitle.setSubTitle(log, st)
@@ -102,7 +113,7 @@ func (newDoc *Document) ReadFile(log *log.Logger, filepath string) error {
 
 		if len(newDoc.GetSubTitle(log)) > 0 {
 			subTitle := newDoc.GetLastSubTitle()
-			comment := comments(scanner.Text(), "//")
+			comment := comments(text, conf.Comment)
 			subTitle.setSubTitleComments(log, comment)
 		}
 	}
@@ -110,24 +121,23 @@ func (newDoc *Document) ReadFile(log *log.Logger, filepath string) error {
 	return f.Close()
 }
 
-func title(text string, nextLine bool, findText string) (string, bool) {
+func title(text string, nextLine bool, findText string, start string, stop string) (string, bool) {
 	if strings.Contains(text, findText) || nextLine {
 		var newS = ""
-		s := strings.Index(text, "\"")
-		if s == -1 || (strings.Count(text, "\"") == 1 && s != 0) {
+		s := strings.Index(text, start)
+		if s == -1 || (strings.Count(text, stop) == 1 && s != 0) {
 			if !nextLine {
 				return "", true
 			}
 			newS = text
 		} else {
-			_, newS, _ = strings.Cut(text, "\"")
-			fmt.Println(newS)
+			_, newS, _ = strings.Cut(text, start)
 		}
-		e := strings.Index(newS, "\"")
+		e := strings.Index(newS, stop)
 		if e == -1 {
 			return newS, true
 		}
-		result, _, _ := strings.Cut(newS, "\"")
+		result, _, _ := strings.Cut(newS, stop)
 		return result, false
 	}
 	return "", false
