@@ -20,12 +20,16 @@ func newSubTitle() *SubTitles {
 
 func (sub *SubTitles) setSubTitle(log *log.Logger, title string) {
 	log.Printf("Setting subtitle title to: %s", title)
+	builder := strings.Builder{}
+	builder.WriteString(sub.Title)
+	builder.WriteString(title)
+	builder.WriteString(" ")
 	sub.Title = sub.Title + title + " "
 }
 
 func (sub *SubTitles) setSubTitleComments(log *log.Logger, comment string) {
 	log.Printf("Setting subtitle comment to: %s", comment)
-	sub.Title = sub.Comment + comment + " "
+	sub.Comment = append(sub.Comment, comment)
 }
 
 func (newDoc *Document) GetSubTitle(log *log.Logger) []SubTitles {
@@ -35,7 +39,11 @@ func (newDoc *Document) GetSubTitle(log *log.Logger) []SubTitles {
 
 func (newDoc *Document) setMainTitle(log *log.Logger, title string) {
 	log.Printf("Setting Main Title To: %s", title)
-	newDoc.Title.Title = newDoc.Title.Title + title + " "
+	builder := strings.Builder{}
+	builder.WriteString(newDoc.Title.Title)
+	builder.WriteString(title)
+	builder.WriteString(" ")
+	newDoc.Title.Title = builder.String()
 }
 
 func (newDoc *Document) GetMainTitle(log *log.Logger) string {
@@ -45,10 +53,10 @@ func (newDoc *Document) GetMainTitle(log *log.Logger) string {
 
 func (newDoc *Document) setMainComments(log *log.Logger, comment string) {
 	log.Printf("Setting Main Comment To: %s", comment)
-	newDoc.Title.Title = newDoc.Title.Comment + comment + " "
+	newDoc.Title.Comment = append(newDoc.Title.Comment, comment)
 }
 
-func (newDoc *Document) GetMainComments(log *log.Logger) string {
+func (newDoc *Document) GetMainComments(log *log.Logger) []string {
 	log.Printf("Getting Main Comments")
 	return newDoc.Title.Comment
 }

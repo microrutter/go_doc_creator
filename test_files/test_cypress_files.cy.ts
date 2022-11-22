@@ -42,14 +42,14 @@ describe("This is an amazing description tahnkl you", function () {
           // The we might do this
     });
 
-    it("Second test woohoo", function () {
+    it("Fith test woohoo", function () {
       cy.wait(50000)
       // We are going top do this
         // Then we are going to do this
           // The we might do this
     });
 
-    it("Third test woohoo", function () {
+    it("Sixth test woohoo", function () {
       cy.wait(50000)
       // We are going top do this
         // Then we are going to do this
