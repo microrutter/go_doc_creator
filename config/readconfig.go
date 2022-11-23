@@ -13,10 +13,10 @@ func Config() *Yaml {
 	return &Yaml{}
 }
 
-func (c *Yaml) GetConf(log log.Logger, filepath string) {
+func (c *Yaml) GetConf(log *log.Logger, filepath string) {
 	log.Print("Getting Configuration")
 	yamlFile, err := ioutil.ReadFile(filepath)
-	utils.Check(err, &log)
+	utils.Check(err, log)
 	err = yaml.Unmarshal(yamlFile, c)
-	utils.Check(err, &log)
+	utils.Check(err, log)
 }

@@ -5,3 +5,7 @@ conf:
     finish: "\""
   subtitle: "it("
   comment: "//"
+  output:
+    type: "test"
+    secret: "iamsecret"
+    startingpage: "starthere"
