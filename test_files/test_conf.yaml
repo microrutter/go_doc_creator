@@ -9,3 +9,4 @@ conf:
     type: "test"
     secret: "iamsecret"
     startingpage: "starthere"
+    imageurl: "iamaimageurl"

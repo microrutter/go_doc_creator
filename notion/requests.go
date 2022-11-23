@@ -103,14 +103,14 @@ func CreateNotionDocuments(log *log.Logger, conffile string, filepath string) {
 		for _, exist := range oldOut.Object {
 			if exist.Type == "child_page" && exist.ChildPage.Title == dir.Name {
 				id := exist.Id
-				addFilePages(log, id, dir, conf.Output.Secret)
+				addFilePages(log, id, dir, conf.Output.Secret, conf.Output.Image)
 				pageExists = false
 			}
 		}
 		if pageExists {
 			bd := NewBodyNoChildren()
 			bd.Parent.PageId = conf.Output.StartingPage
-			bd.Cover.External.URL = "https://www.cypress.io/static/8fb8a1db3cdc0b289fad927694ecb415/cypress-io-logo-social-share.png"
+			bd.Cover.External.URL = conf.Output.Image
 			tt := NewText()
 			tt.Text.Cont = dir.Name
 			bd.Properties.Text = append(bd.Properties.Text, *tt)
@@ -126,7 +126,7 @@ func CreateNotionDocuments(log *log.Logger, conffile string, filepath string) {
 			utils.Check(err, log)
 			resp.Body.Close()
 			id := out.Id
-			addFilePages(log, id, dir, conf.Output.Secret)
+			addFilePages(log, id, dir, conf.Output.Secret, conf.Output.Image)
 		}
 
 	}
@@ -141,12 +141,12 @@ func createReqClient(log *log.Logger, op string, url string, secret string, body
 	return client, reqH
 }
 
-func addFilePages(log *log.Logger, id string, dir files.Directory, secret string) {
+func addFilePages(log *log.Logger, id string, dir files.Directory, secret string, imageurl string) {
 
 	for _, file := range dir.Files {
 		subPage := NewBody()
 		subPage.Parent.PageId = id
-		subPage.Cover.External.URL = "https://www.cypress.io/static/8fb8a1db3cdc0b289fad927694ecb415/cypress-io-logo-social-share.png"
+		subPage.Cover.External.URL = imageurl
 		ntt := NewText()
 		ntt.Text.Cont = file.Name
 		subPage.Properties.Text = append(subPage.Properties.Text, *ntt)
@@ -178,7 +178,6 @@ func addFilePages(log *log.Logger, id string, dir files.Directory, secret string
 		utils.Check(err, log)
 		responseBody := bytes.NewBuffer(sendBody)
 		client, req := createReqClient(log, "POST", "pages", secret, responseBody)
-		fmt.Print(req.Body)
 		resp, err := client.Do(req)
 		utils.Check(err, log)
 		log.Printf("Response code: %d from creation of %s", resp.StatusCode, file.Name)
