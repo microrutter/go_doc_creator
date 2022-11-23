@@ -41,4 +41,7 @@ func TestGetConfig(t *testing.T) {
 	if c.Output.StartingPage != "starthere" {
 		t.Errorf("Was looking for starthere but got %s", c.Output.StartingPage)
 	}
+	if c.Output.Image != "iamaimageurl" {
+		t.Errorf("was looking for iamaimageurl but got %s", c.Output.Image)
+	}
 }

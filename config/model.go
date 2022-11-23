@@ -21,4 +21,5 @@ type Output struct {
 	Type         string `yaml:"type"`
 	Secret       string `yaml:"secret"`
 	StartingPage string `yaml:"startingpage"`
+	Image        string `yaml:"imageurl"`
 }

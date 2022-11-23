@@ -2,19 +2,22 @@ package main
 
 import (
 	"bytes"
-	"fmt"
+	"flag"
 	"log"
 
 	"github.com/microrutter/go_doc_creator/notion"
 )
 
+var (
+	buf    bytes.Buffer
+	logger = log.New(&buf, "logger: ", log.Lshortfile)
+)
+
 func main() {
-	var (
-		buf    bytes.Buffer
-		logger = log.New(&buf, "logger: ", log.Lshortfile)
-	)
+	configfile := flag.String("configfile", "conf.yaml", "The file path to the conf file")
+	filepath := flag.String("topdir", "/path/to/top/level/file", "The file path to where your cypress tests are held")
+	flag.Parse()
+	notion.CreateNotionDocuments(logger, *configfile, *filepath)
 
-	notion.CreateNotionDocuments(logger, "conf.yaml", "/media/wayne/FreeAgent GoFlex Drive/Central Data Store/plandek - wip/nextgen/e2e/cypress/e2e")
-
-	fmt.Print(&buf)
+	// fmt.Print(&buf)
 }
