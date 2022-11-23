@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/microrutter/go_doc_creator/files"
+	"github.com/microrutter/go_doc_creator/notion"
 )
 
 func main() {
@@ -14,9 +14,7 @@ func main() {
 		logger = log.New(&buf, "logger: ", log.Lshortfile)
 	)
 
-	d := files.NewDirectories()
-
-	d.WalkAllFilesInDir("/media/wayne/FreeAgent GoFlex Drive/Central Data Store/plandek - wip/nextgen/e2e/cypress/e2e", *logger, "conf.yaml")
+	notion.CreateNotionDocuments(logger, "conf.yaml", "/media/wayne/FreeAgent GoFlex Drive/Central Data Store/plandek - wip/nextgen/e2e/cypress/e2e")
 
 	fmt.Print(&buf)
 }

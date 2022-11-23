@@ -13,7 +13,7 @@ var (
 
 func TestGetConfig(t *testing.T) {
 	y := Config()
-	y.GetConf(*logger, "../test_files/test_conf.yaml")
+	y.GetConf(logger, "../test_files/test_conf.yaml")
 
 	c := y.Conf
 
@@ -31,5 +31,14 @@ func TestGetConfig(t *testing.T) {
 	}
 	if c.Comment != "//" {
 		t.Errorf("Was looking for // but got %s", c.Comment)
+	}
+	if c.Output.Type != "test" {
+		t.Errorf("Was looking for test but got %s", c.Output.Type)
+	}
+	if c.Output.Secret != "iamsecret" {
+		t.Errorf("Was looking for iamsecret but got %s", c.Output.Secret)
+	}
+	if c.Output.StartingPage != "starthere" {
+		t.Errorf("Was looking for starthere but got %s", c.Output.StartingPage)
 	}
 }

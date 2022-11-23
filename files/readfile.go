@@ -74,7 +74,7 @@ func (newDoc *Document) ReadFile(log *log.Logger, filepath string, conffile stri
 
 	yaml := config.Config()
 
-	yaml.GetConf(*log, conffile)
+	yaml.GetConf(log, conffile)
 
 	conf := yaml.Conf
 
@@ -122,7 +122,7 @@ func (newDoc *Document) ReadFile(log *log.Logger, filepath string, conffile stri
 }
 
 func title(text string, nextLine bool, findText string, start string, stop string) (string, bool) {
-	if strings.Contains(text, findText) || nextLine {
+	if strings.Contains(strings.TrimSpace(text), findText) && strings.Index(strings.TrimSpace(text), findText) < 4 || nextLine {
 		var newS = ""
 		s := strings.Index(text, start)
 		if s == -1 || (strings.Count(text, stop) == 1 && s != 0) {
