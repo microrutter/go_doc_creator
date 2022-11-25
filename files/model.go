@@ -10,9 +10,13 @@ type SubTitles struct {
 	Comment []string
 }
 
-type Document struct {
+type Test struct {
 	Title    MainTitle
 	SubTitle []SubTitles
+}
+
+type Document struct {
+	Test []Test
 }
 
 type File struct {

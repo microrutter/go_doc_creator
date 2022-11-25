@@ -150,29 +150,8 @@ func addFilePages(log *log.Logger, id string, dir files.Directory, secret string
 		ntt := NewText()
 		ntt.Text.Cont = file.Name
 		subPage.Properties.Text = append(subPage.Properties.Text, *ntt)
-		ho := NewHeadingOneObject()
-		ho.addHeadingOne(log, file.Doc.Title.Title)
-		subPage.Children = append(subPage.Children, *ho)
-
-		for _, s := range file.Doc.Title.Comment {
-			if len(strings.TrimSpace(s)) > 0 {
-				b := NewBulletedListObject()
-				b.addComments(log, s)
-				subPage.Children = append(subPage.Children, *b)
-			}
-		}
-
-		for _, sp := range file.Doc.SubTitle {
-			ht := NewHeadingTwoObject()
-			ht.addHeadingTwo(log, sp.Title)
-			subPage.Children = append(subPage.Children, *ht)
-			for _, s := range sp.Comment {
-				if len(strings.TrimSpace(s)) > 0 {
-					sb := NewBulletedListObject()
-					sb.addComments(log, s)
-					subPage.Children = append(subPage.Children, *sb)
-				}
-			}
+		for _, test := range file.Doc.Test {
+			subPage.addContents(log, &test)
 		}
 		sendBody, err := json.Marshal(subPage)
 		utils.Check(err, log)
@@ -216,4 +195,31 @@ func (h *HeadingTwoObject) addHeadingTwo(log *log.Logger, title string) {
 	rt.Type = "text"
 	rt.Text = *nntt
 	h.HeadTwo.RichText = append(h.HeadTwo.RichText, *rt)
+}
+
+func (subPage *Body) addContents(log *log.Logger, t *files.Test) {
+	ho := NewHeadingOneObject()
+	ho.addHeadingOne(log, t.Title.Title)
+	subPage.Children = append(subPage.Children, *ho)
+
+	for _, s := range t.Title.Comment {
+		if len(strings.TrimSpace(s)) > 0 {
+			b := NewBulletedListObject()
+			b.addComments(log, s)
+			subPage.Children = append(subPage.Children, *b)
+		}
+	}
+
+	for _, sp := range t.SubTitle {
+		ht := NewHeadingTwoObject()
+		ht.addHeadingTwo(log, sp.Title)
+		subPage.Children = append(subPage.Children, *ht)
+		for _, s := range sp.Comment {
+			if len(strings.TrimSpace(s)) > 0 {
+				sb := NewBulletedListObject()
+				sb.addComments(log, s)
+				subPage.Children = append(subPage.Children, *sb)
+			}
+		}
+	}
 }
