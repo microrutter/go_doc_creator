@@ -4,7 +4,9 @@ conf:
     start: "\""
     finish: "\""
   subtitle: "it("
-  comment: "//"
+  comment: 
+    start: "//"
+    finish:
   output:
     type: "test"
     secret: "iamsecret"

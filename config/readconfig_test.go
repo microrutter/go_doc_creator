@@ -29,8 +29,8 @@ func TestGetConfig(t *testing.T) {
 	if c.SubTitle != "it(" {
 		t.Errorf("Was looking for it( but got %s", c.SubTitle)
 	}
-	if c.Comment != "//" {
-		t.Errorf("Was looking for // but got %s", c.Comment)
+	if c.Comment.Start != "//" {
+		t.Errorf("Was looking for // but got %s", c.Comment.Start)
 	}
 	if c.Output.Type != "test" {
 		t.Errorf("Was looking for test but got %s", c.Output.Type)
